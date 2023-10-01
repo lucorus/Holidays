@@ -8,9 +8,18 @@ start = time.time()
 
 # парсим праздники
 def parse_holidays():
-    response = requests.get('https://my-calend.ru/holidays').text
+    response = requests.get('https://www.calend.ru/').text
     soup = bs4.BeautifulSoup(response, 'html.parser')
-    data = soup.find('section')
+    #data = soup.find('section')
+    #data = soup.find('li', {'class': 'one_three'})
+    data = soup.find_all('span', {'class': 'title'})
+    return data
+
+
+def parse_trash():
+    response = requests.get('https://www.calend.ru/').text
+    soup = bs4.BeautifulSoup(response, 'html.parser')
+    data = soup.find_all('div', {'class': 'hinted'})
     return data
 
 
@@ -19,18 +28,20 @@ def no_eng(text):
     answer = ''
     for item in text:
         if item not in 'qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM'\
-                and item not in '+-*/<>=[]":.,(){}1234567890__!' \
+                and item not in '+-*/<>=[]":.,(){}1234567890_!' \
                 and item not in "'" and item not in ' ':
             answer += item
     return answer
 
 
 # удаляем лишнее
-def delete_excess_symbols(holidays: list) -> list:
+def delete_excess_symbols(holidays: list, delete_trash=True) -> list:
     holidays = no_eng(str(holidays))
     # обрезаем лишний текст + лишние пробелы в начале и конце
-    holidays = holidays[20:-2]
-    holidays = holidays.strip()
+    # если нужно удалить мусор, то удаляем
+    if delete_trash:
+        holidays = holidays[20:-2]
+        holidays = holidays.strip()
 
     holi = ''
     arr = []
@@ -60,14 +71,33 @@ def delete_excess_symbols(holidays: list) -> list:
     return arr
 
 
+# удаляем мусор из праздников
+def delete_trash(holidays: list, trash: list):
+    for item in trash:
+        for holiday in range(len(holidays)):
+            if item == holidays[holiday]:
+                holidays[holiday] = 1
+
+    try:
+        while holidays.count(1) > 0:
+            holidays.remove(1)
+    except:
+        pass
+
+    return holidays
+
+
 if __name__ == '__main__':
     congratulation = delete_excess_symbols(list(parse_holidays()))
-
+    trash = delete_excess_symbols(list(parse_trash()), False)
+    congratulation = delete_trash(congratulation, trash)
     data = datetime.datetime.now()
-    file = open(f'поздравления/{data.day}-{data.month}-{data.year}file{ random.randint(0, 100) }.txt', 'a')
+
+    congratulation = congratulation[27:-42]
     congratulation = 'Приветствую всех, а так же хочу поздравить вас с такими ЧУДЕСНЫМИ праздниками, как: ' + ', '.join(congratulation) + '!!!'
+    file = open(f'celebration/{data.day}-{data.month}-{data.year}file{ random.randint(0, 100) }.txt', 'a')
     file.write(congratulation)
     file.close()
-
+    print(congratulation)
     print('Время выполнения: ', time.time() - start)
 
