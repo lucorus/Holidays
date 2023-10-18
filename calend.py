@@ -3,6 +3,8 @@ import random
 import time
 import bs4
 import requests
+from catolic_celebration import today_christian_holidays
+from birth import today_birthday_man
 start = time.time()
 
 
@@ -29,7 +31,7 @@ def no_eng(text):
 def delete_excess_symbols(holidays: list) -> list:
     holidays = no_eng(str(holidays))
     # обрезаем лишний текст + лишние пробелы в начале и конце
-    holidays = holidays[20:-2]
+    holidays = holidays[20:]
     holidays = holidays.strip()
 
     holi = ''
@@ -62,11 +64,21 @@ def delete_excess_symbols(holidays: list) -> list:
 
 if __name__ == '__main__':
     congratulation = delete_excess_symbols(list(parse_holidays()))
-
+    christian_congratulation = today_christian_holidays()
     data = datetime.datetime.now()
     file = open(f'поздравления/{data.day}-{data.month}-{data.year}file{ random.randint(0, 100) }.txt', 'a')
-    congratulation = 'Приветствую всех, а так же хочу поздравить вас с такими ЧУДЕСНЫМИ праздниками, как: ' + ', '.join(congratulation) + '!!!'
-    file.write(congratulation)
+
+    file.write('Приветствую всех, а так же хочу поздравить вас с такими ЧУДЕСНЫМИ праздниками, как: ' + \
+               ', '.join(congratulation + christian_congratulation))
+
+    file.write('\nПриветствую всех, а так же хочу поздравить вас с такими ЧУДЕСНЫМИ праздниками, как: ' + \
+                     ', '.join(congratulation + christian_congratulation) + '. А так же сегодня родились такие ВЫДАЮЩИЕСЯ личности, как: ' + \
+                     ', '.join(today_birthday_man()))
+
+    file.write('\nхай! знаешь, у меня такое ПРЕКРАСНОЕ настроение! думаю, что стоит поздравить тебя с такими ЧУДЕСНЫМИ праздниками, как: ' + \
+                     ', '.join(congratulation + christian_congratulation) + '. А так же сегодня родились такие ВЫДАЮЩИЕСЯ личности, как: ' + \
+                     ', '.join(today_birthday_man()))
+    file.write('\n!!!')
     file.close()
 
     print('Время выполнения: ', time.time() - start)
