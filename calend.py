@@ -3,7 +3,7 @@ import random
 import time
 import bs4
 import requests
-from catolic_celebration import today_christian_holidays
+import catolic_celebration
 from birth import today_birthday_man
 start = time.time()
 
@@ -64,9 +64,9 @@ def delete_excess_symbols(holidays: list) -> list:
 
 if __name__ == '__main__':
     congratulation = delete_excess_symbols(list(parse_holidays()))
-    christian_congratulation = today_christian_holidays()
+    christian_congratulation = catolic_celebration.today_christian_holidays()
     data = datetime.datetime.now()
-    file = open(f'поздравления/{data.day}-{data.month}-{data.year}file{ random.randint(0, 100) }.txt', 'a')
+    file = open(f'поздравления/{data.day}-{data.month}-{data.year}file{ random.randint(0, 100) }.txt', 'a', encoding='utf-8')
 
     file.write('Приветствую всех, а так же хочу поздравить вас с такими ЧУДЕСНЫМИ праздниками, как: ' + \
                ', '.join(congratulation + christian_congratulation))

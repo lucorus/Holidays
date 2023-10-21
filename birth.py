@@ -6,7 +6,7 @@ start = time.time()
 
 # парсим именинников
 def parse_birthday_man():
-    response = requests.get('https://celebers.com/birthday/?ysclid=lnvd4mha2k810348049').text
+    response = requests.get('https://celebers.com/birthday/').text
     soup = bs4.BeautifulSoup(response, 'html.parser')
     data = soup.find_all('span', {'class': 'name'})
     return data
